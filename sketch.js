@@ -1,17 +1,27 @@
 var fazenda;
 var up, up1, up2, up3;
+var pennywise;
 var detetive, predio, azul, blue, it;
 var vida, morte;
+var placar = 0;
+var playing = 0;
+var die = 1;
+var videogame = playing;
+var naoaperte, aperte;
+var detona, ralph;
 
 
 function preload(){
   fazenda = loadImage ("./assets/bg.png");
   up1 = loadAnimation("./assets/balloon1.png", "./assets/balloon2.png", "./assets/balloon3.png");
+  pennywise = loadAnimation("./assets/balloon1.png");
   detetive = loadImage("./assets/obsBottom1.png");
   azul = loadImage ("./assets/obsBottom2.png");
   predio  = loadImage ("./assets/obsBottom3.png");
   it = loadImage ("./assets/obsTop1.png");
   blue = loadImage ("./assets/obsTop2.png");
+  naoaperte = loadImage("./assets/restart.png");
+  detona = loadImage ("./assets/fimdejogo.png");
 }
 
 function setup() {
@@ -19,7 +29,19 @@ function setup() {
 
   up = createSprite(90, 150, 50, 50);
   up.addAnimation("altasaventuras", up1);
+  up.addAnimation("itacoisa", pennywise);
+  up.changeAnimation("altasaventuras");
   up.scale = 0.45;
+  
+  aperte = createSprite(width/2, height/2+70);
+  aperte.addImage (naoaperte);
+  aperte.scale = 0.8;
+
+  ralph = createSprite(width/2, height/2);
+  ralph.addImage (detona);
+  ralph.scale = 1;
+
+  up.debug = false;
 
   vida = new Group();
   morte = new Group();
@@ -28,15 +50,45 @@ function setup() {
 function draw() {
   background(fazenda);
 
-  if(keyDown ("UP_ARROW")){
-    up.velocityY = -15;
-  }
-  up.velocityY += 1.3;
+  if(videogame === playing){
+    if(keyDown ("UP_ARROW")){
+      up.velocityY = -15;
+    }
+    up.velocityY += 1.3;
 
-  ar();
-  terra();
+    ar();
+    terra();
+
+    placar += Math.round(frameRate()/60.3);
+
+    if(vida.isTouching (up) || morte.isTouching (up) || up.y > 820 ){
+      videogame = die;
+    }
+
+    aperte.visible = false;
+    ralph.visible = false;
+  }
+  else if(videogame === die){
+   aperte.visible = true;
+   ralph.visible = true;
+
+   vida.setVelocityXEach(0);
+   morte.setVelocityXEach(0);
+   up.velocityY = 0;
+
+   vida.setLifetimeEach(-18);
+   morte.setLifetimeEach(-18);
+
+   up.changeAnimation("itacoisa");
+  }
 
   drawSprites();
+  
+  textSize(20);
+  fill("black");
+  stroke("black");
+  text("placar:" + placar, 30, 40);
+  
 }
 
 function ar (){
