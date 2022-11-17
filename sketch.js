@@ -9,6 +9,7 @@ var die = 1;
 var videogame = playing;
 var naoaperte, aperte;
 var detona, ralph;
+var canguroo, classico;
 
 
 function preload(){
@@ -22,6 +23,8 @@ function preload(){
   blue = loadImage ("./assets/obsTop2.png");
   naoaperte = loadImage("./assets/restart.png");
   detona = loadImage ("./assets/fimdejogo.png");
+  canguroo = loadSound ("./assets/jump.mp3");
+  classico = loadSound ("./assets/die.mp3");
 }
 
 function setup() {
@@ -53,6 +56,7 @@ function draw() {
   if(videogame === playing){
     if(keyDown ("UP_ARROW")){
       up.velocityY = -15;
+      canguroo.play();
     }
     up.velocityY += 1.3;
 
@@ -63,6 +67,7 @@ function draw() {
 
     if(vida.isTouching (up) || morte.isTouching (up) || up.y > 820 ){
       videogame = die;
+      classico.play();
     }
 
     aperte.visible = false;
@@ -80,6 +85,10 @@ function draw() {
    morte.setLifetimeEach(-18);
 
    up.changeAnimation("itacoisa");
+
+   if(mousePressedOver(aperte)){
+     tempo ();
+   }
   }
 
   drawSprites();
@@ -95,6 +104,7 @@ function ar (){
   if(frameCount % 80 === 0){
     oxigenio = createSprite(1600, random(0, height/2), 45, 45);
     oxigenio.velocityX = -5;
+    oxigenio.debug = false;
     pi = Math.round(random(1,2));
     switch(pi){
       case 1: oxigenio.addImage(blue)
@@ -105,7 +115,12 @@ function ar (){
       break;
       default: break;
     }
-    oxigenio.lifetime = 330;  
+    oxigenio.lifetime = 330;
+
+    oxigenio.depth = aperte.depth;
+    oxigenio.depth = ralph.depth;
+    aperte.depth += 1;
+    ralph.depth += 1;
 
     vida.add(oxigenio);
   }
@@ -115,6 +130,7 @@ function terra (){
   if(frameCount % Math.round (random (60, 100)) === 0){
     solo = createSprite(1600, 750, 45, 45);
     solo.velocityX = -5;
+    solo.debug = false;
     circulo = Math.round(random(1, 3));
     switch(circulo){
       case 1: solo.addImage(detetive)
@@ -131,8 +147,22 @@ function terra (){
       break;
       default: break;
     }
-    solo.lifetime = 370;  
+    solo.lifetime = 370; 
+    
+    solo.depth = aperte.depth;
+    solo.depth = ralph.depth;
+    aperte.depth += 1;
+    ralph.depth += 1;
 
     morte.add(solo);
   }
+}
+
+function tempo(){
+  videogame = playing;
+  up.y = 150;
+  up.changeAnimation("altasaventuras");
+  vida.destroyEach();
+  morte.destroyEach();
+  placar = 0;
 }
